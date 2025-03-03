@@ -1,1 +1,49 @@
-Scans the webpage for hidden endpoints, extracts resource URLs, and identifies JavaScript-based endpoints.
+## Scans the webpage for hidden endpoints, extracts resource URLs, and identifies JavaScript-based endpoints.
+
+### Hidden Endpoint:
+
+```jsx
+javascript:(async function(){let scanningDiv=document.createElement("div");scanningDiv.style.position="fixed",scanningDiv.style.bottom="0",scanningDiv.style.left="0",scanningDiv.style.width="100%",scanningDiv.style.maxHeight="50%",scanningDiv.style.overflowY="scroll",scanningDiv.style.backgroundColor="white",scanningDiv.style.color="black",scanningDiv.style.padding="10px",scanningDiv.style.zIndex="9999",scanningDiv.style.borderTop="2px solid black",scanningDiv.innerHTML="<h4>Scanning...</h4>",document.body.appendChild(scanningDiv);let e=[],t=new Set;async function n(e){try{const t=await fetch(e);return t.ok?await t.text():(console.error(`Failed to fetch ${e}: ${t.status}`),null)}catch(t){return console.error(`Error fetching ${e}:`,t),null}}function o(e){return(e.startsWith("/")||e.startsWith("./")||e.startsWith("../"))&&!e.includes(" ")&&!/[^\x20-\x7E]/.test(e)&&e.length>1&&e.length<200}function s(e){return[...e.matchAll(/[%27"]((?:\/|\.\.\/|\.\/)[^%27"]+)[%27"]/g)].map(e=>e[1]).filter(o)}async function c(o){if(t.has(o))return;t.add(o),console.log(`Fetching and processing: ${o}`);const c=await n(o);if(c){const t=s(c);e.push(...t)}}const l=performance.getEntriesByType("resource").map(e=>e.name);console.log("Resources found:",l);for(const e of l)await c(e);const i=[...new Set(e)];console.log("Final list of unique paths:",i),console.log("All scanned resources:",Array.from(t)),scanningDiv.innerHTML=`<h4>Unique Paths Found:</h4><ul>${i.map(e=>`<li>${e}</li>`).join("")}</ul>`})();
+```
+
+### Advanced Endpoint:
+
+```jsx
+javascript:(function(){function g(u,b){try{return new URL(u,b).href}catch(e){return null}}var a=['src','href','action'],e=Array.from(document.querySelectorAll("*")).filter(function(e){return a.some(function(t){return e.hasAttribute(t)})}),u=[];e.forEach(function(e){a.forEach(function(t){e.hasAttribute(t)&&(n=e.getAttribute(t))&&(o=g(n,document.baseURI))&&u.push(o)})});var r=[...new Set(u)];window.open().document.write("<pre>"+r.join("\n")+"</pre>")})();
+```
+
+### Js Endpoint:
+
+```jsx
+javascript:(function(){var scripts=document.getElementsByTagName("script"),regex=/(?<=(\"|\%27|\`))\/[a-zA-Z0-9_?&=\/\-\#\.]*(?=(\"|\'|\%60))/g;const results=new Set;for(var i=0;i<scripts.length;i++){var t=scripts[i].src;""!=t&&fetch(t).then(function(t){return t.text()}).then(function(t){var e=t.matchAll(regex);for(let r of e)results.add(r[0])}).catch(function(t){console.log("An error occurred: ",t)})}var pageContent=document.documentElement.outerHTML,matches=pageContent.matchAll(regex);for(const match of matches)results.add(match[0]);function writeResults(){results.forEach(function(t){document.write(t+"<br>")})}setTimeout(writeResults,3e3);})();
+```
+
+### VirusTotal:
+
+```jsx
+javascript:window.location="https://www.virustotal.com/vtapi/v2/domain/report?apikey=<VTAPI-Key>&domain="+encodeURIComponent(window.location.host)
+```
+
+### URLScan:
+
+```jsx
+javascript:window.location="https://urlscan.io/api/v1/search/?size=10000&q=domain:"+encodeURIComponent(window.location.host)
+```
+
+### Wayback:
+
+```jsx
+javascript:window.location="[https://web.archive.org/cdx/search/cdx?output=text&fl=original&collapse=urlkey&url=*."+encodeURIComponent(window.location.host)](https://web.archive.org/cdx/search/cdx?output=text&fl=original&collapse=urlkey&url=*.%22+encodeURIComponent(window.location.host))
+```
+
+### Censys:
+
+```jsx
+ javascript:window.location="[https://search.censys.io/search?resource=hosts&sort=RELEVANCE&per_page=25&virtual_hosts=INCLUDE&q=services.http.response.html_title:"+encodeURIComponent('"' + document.title + '"')](https://search.censys.io/search?resource=hosts&sort=RELEVANCE&per_page=25&virtual_hosts=INCLUDE&q=services.http.response.html_title:%22+encodeURIComponent(%27%22%27%20+%20document.title%20+%20%27%22%27));
+```
+
+### FREEDIUM:
+
+```jsx
+javascript:window.location="https://freedium.cfd/"+encodeURIComponent(window.location)
+```
